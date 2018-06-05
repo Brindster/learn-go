@@ -37,9 +37,25 @@ func contactHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 	render(w, renderParams{t: "view/contact.gohtml"})
 }
+
 func faqHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	render(w, renderParams{t: "view/faq.gohtml"})
+
+	type Question struct {
+		Q, A string
+	}
+
+	type Data = struct {
+		Qs []Question
+	}
+
+	qs := []Question{}
+	qs = append(qs, Question{Q: "What is this site?", A: "Just a test"})
+	qs = append(qs, Question{Q: "Is Go a good language", A: "Too early to tell"})
+
+	d := Data{qs}
+
+	render(w, renderParams{t: "view/faq.gohtml", p: d})
 }
 
 func notFoundHandler(w http.ResponseWriter, r *http.Request) {

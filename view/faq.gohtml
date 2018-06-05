@@ -6,8 +6,12 @@
 <body>
 	<h1>Frequently asked questions</h1>
 	<dl>
-		<dt>What is this website?</dt>
-		<dd>Just a project to help learn go!</dd>
+		{{range .Qs}}
+		<dt>{{.Q}}</dt>
+		<dd>{{.A}}</dd>
+		{{else}}
+		<dd>There are no questions</dd>
+		{{end}}
 	</dl>
 </body>
 </html>
