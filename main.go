@@ -7,11 +7,9 @@ import (
 	"github.com/gorilla/mux"
 )
 
-type params interface{}
-
 type renderParams struct {
 	t string
-	p params
+	p interface{}
 }
 
 func render(w http.ResponseWriter, p renderParams) {
