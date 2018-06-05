@@ -8,20 +8,27 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func homeHandler(w http.ResponseWriter, r *http.Request) {
-	t, err := template.ParseFiles("view/index.gohtml")
+type renderParams interface{}
+
+func render(w http.ResponseWriter, tpl string, data renderParams) {
+	t, err := template.ParseFiles(tpl)
 	if err != nil {
 		panic(err)
 	}
+
+	if err = t.Execute(w, data); err != nil {
+		panic(err)
+	}
+}
+
+func homeHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 
 	data := struct {
 		Name string
 	}{"Chris Brindley"}
 
-	if err = t.Execute(w, data); err != nil {
-		panic(err)
-	}
+	render(w, "view/index.gohtml", data)
 }
 
 func contactHandler(w http.ResponseWriter, r *http.Request) {
