@@ -8,15 +8,20 @@ import (
 	"github.com/gorilla/mux"
 )
 
-type renderParams interface{}
+type params interface{}
 
-func render(w http.ResponseWriter, tpl string, data renderParams) {
-	t, err := template.ParseFiles(tpl)
+type renderParams struct {
+	t string
+	p params
+}
+
+func render(w http.ResponseWriter, p renderParams) {
+	t, err := template.ParseFiles(p.t)
 	if err != nil {
 		panic(err)
 	}
 
-	if err = t.Execute(w, data); err != nil {
+	if err = t.Execute(w, p.p); err != nil {
 		panic(err)
 	}
 }
@@ -28,7 +33,7 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 		Name string
 	}{"Chris Brindley"}
 
-	render(w, "view/index.gohtml", data)
+	render(w, renderParams{t: "view/index.gohtml", p: data})
 }
 
 func contactHandler(w http.ResponseWriter, r *http.Request) {
