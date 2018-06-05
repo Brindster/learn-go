@@ -4,6 +4,10 @@
 	<title>Chris Brindley homepage</title>
 </head>
 <body>
+	{{if .Name}}
 	<h1>Hello, {{.Name}}!</h1>
+	{{else}}
+	<h1>Anonymous user? You are welcome too.</h1>
+	{{end}}
 </body>
 </html>
