@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"html/template"
 	"net/http"
 
@@ -38,17 +37,17 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 
 func contactHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	fmt.Fprint(w, "<p>Contact me on <a href=\"mailto:chris@chrisbrindley.co.uk\">chris@chrisbrindley.co.uk</a>!</p>")
+	render(w, renderParams{t: "view/contact.gohtml"})
 }
 func faqHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	fmt.Fprint(w, "<h3>Frequently Asked Questions</h3><dl><dt>What the heck is this site</dt><dd>I dunno!</dd></dl>")
+	render(w, renderParams{t: "view/faq.gohtml"})
 }
 
 func notFoundHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 	w.WriteHeader(http.StatusNotFound)
-	fmt.Fprint(w, "<p>The page you are looking for could not be found.</p>")
+	render(w, renderParams{t: "view/404.gohtml"})
 }
 
 func main() {
