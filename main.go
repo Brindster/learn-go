@@ -13,7 +13,7 @@ type renderParams struct {
 }
 
 func render(w http.ResponseWriter, p renderParams) {
-	t, err := template.ParseFiles(p.t)
+	t, err := template.ParseFiles("view/layout/main.gohtml", "view/layout/nav.gohtml", p.t)
 	if err != nil {
 		panic(err)
 	}

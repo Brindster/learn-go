@@ -1,17 +1,11 @@
-<!DOCTYPE html>
-<html>
-<head>
-	<title>Chris Brindley homepage</title>
-</head>
-<body>
-	<h1>Frequently asked questions</h1>
-	<dl>
-		{{range .Qs}}
-		<dt>{{.Q}}</dt>
-		<dd>{{.A}}</dd>
-		{{else}}
-		<dd>There are no questions</dd>
-		{{end}}
-	</dl>
-</body>
-</html>
+{{define "content"}}
+<h1>Frequently asked questions</h1>
+<dl>
+	{{range .Qs}}
+	<dt>{{.Q}}</dt>
+	<dd>{{.A}}</dd>
+	{{else}}
+	<dd>There are no questions</dd>
+	{{end}}
+</dl>
+{{end}}
