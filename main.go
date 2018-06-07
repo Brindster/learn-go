@@ -7,19 +7,31 @@ import (
 	"github.com/gorilla/mux"
 )
 
+var templates map[string]*template.Template
+
 type renderParams struct {
 	t string
 	p interface{}
 }
 
-func render(w http.ResponseWriter, p renderParams) {
-	t, err := template.ParseFiles("view/layout/main.gohtml", "view/layout/nav.gohtml", p.t)
+func initTemplate(alias, path string) {
+	if templates == nil {
+		templates = make(map[string]*template.Template)
+	}
+
+	t, err := template.ParseFiles("view/layout/main.gohtml", "view/layout/nav.gohtml", path)
 	if err != nil {
 		panic(err)
 	}
 
-	if err = t.Execute(w, p.p); err != nil {
-		panic(err)
+	templates[alias] = t
+}
+
+func render(w http.ResponseWriter, template string, params interface{}) {
+	if t, ok := templates[template]; ok {
+		if err := t.Execute(w, params); err != nil {
+			panic(err)
+		}
 	}
 }
 
@@ -30,12 +42,12 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 		Name string
 	}{"Chris Brindley"}
 
-	render(w, renderParams{t: "view/index.gohtml", p: data})
+	render(w, "home", data)
 }
 
 func contactHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	render(w, renderParams{t: "view/contact.gohtml"})
+	render(w, "contact", nil)
 }
 
 func faqHandler(w http.ResponseWriter, r *http.Request) {
@@ -55,16 +67,21 @@ func faqHandler(w http.ResponseWriter, r *http.Request) {
 
 	d := Data{qs}
 
-	render(w, renderParams{t: "view/faq.gohtml", p: d})
+	render(w, "faq", d)
 }
 
 func notFoundHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 	w.WriteHeader(http.StatusNotFound)
-	render(w, renderParams{t: "view/404.gohtml"})
+	render(w, "error/404", nil)
 }
 
 func main() {
+	initTemplate("error/404", "view/404.gohtml")
+	initTemplate("home", "view/index.gohtml")
+	initTemplate("contact", "view/contact.gohtml")
+	initTemplate("faq", "view/faq.gohtml")
+
 	r := mux.NewRouter()
 
 	r.HandleFunc("/", homeHandler)
