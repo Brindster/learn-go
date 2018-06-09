@@ -1,35 +1,24 @@
 package main
 
 import (
-	"html/template"
 	"net/http"
 
+	"chrisbrindley.co.uk/view"
 	"github.com/gorilla/mux"
 )
 
-var templates map[string]*template.Template
-
-type renderParams struct {
-	t string
-	p interface{}
-}
+var templates map[string]*view.View
 
 func initTemplate(alias, path string) {
 	if templates == nil {
-		templates = make(map[string]*template.Template)
+		templates = make(map[string]*view.View)
 	}
-
-	t, err := template.ParseFiles("view/layout/main.gohtml", "view/layout/nav.gohtml", path)
-	if err != nil {
-		panic(err)
-	}
-
-	templates[alias] = t
+	templates[alias] = view.NewView("main", path)
 }
 
-func render(w http.ResponseWriter, template string, params interface{}) {
-	if t, ok := templates[template]; ok {
-		if err := t.Execute(w, params); err != nil {
+func render(w http.ResponseWriter, alias string, params interface{}) {
+	if t, ok := templates[alias]; ok {
+		if err := t.Render(w, params); err != nil {
 			panic(err)
 		}
 	}
