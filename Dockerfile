@@ -8,4 +8,11 @@ ADD . .
 RUN go get github.com/golang/dep/cmd/dep
 RUN dep ensure --vendor-only
 
-CMD ["go", "run", "main.go"]
+# Prepare build
+RUN go build -o app
+
+FROM debian:stretch-slim
+WORKDIR /root
+ADD . .
+COPY --from=builder /go/src/chrisbrindley.co.uk/app .
+CMD ["./app"]
