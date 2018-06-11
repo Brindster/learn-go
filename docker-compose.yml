@@ -1,0 +1,17 @@
+version: '3.6'
+
+services:
+  app:
+    image: chrisbrindley.co.uk:latest
+    ports:
+      - 80:8000
+  db:
+    image: mariadb:10.3
+    restart: always
+    environment:
+      MYSQL_RANDOM_ROOT_PASSWORD: 'true'
+    volumes:
+      - "dbdata:/var/lib/mysql"
+
+volumes:
+  dbdata:
