@@ -1,13 +1,26 @@
 package main
 
 import (
+	"database/sql"
+	"fmt"
 	"net/http"
+	"os"
+
+	_ "github.com/go-sql-driver/mysql"
 
 	"chrisbrindley.co.uk/view"
 	"github.com/gorilla/mux"
 )
 
 var templates map[string]*view.View
+
+var (
+	host   = "db"
+	port   = "3306"
+	user   = os.Getenv("MYSQL_USER")
+	pass   = os.Getenv("MYSQL_PASSWORD")
+	dbname = os.Getenv("MYSQL_DATABASE")
+)
 
 func initTemplate(alias, path string) {
 	if templates == nil {
@@ -79,6 +92,19 @@ func main() {
 
 	var h http.Handler = http.HandlerFunc(notFoundHandler)
 	r.NotFoundHandler = h
+
+	conn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", user, pass, host, port, dbname)
+	db, err := sql.Open("mysql", conn)
+	defer db.Close()
+	if err != nil {
+		panic(err)
+	}
+
+	if err = db.Ping(); err != nil {
+		panic(err)
+	}
+
+	fmt.Println("Successfully connected!")
 
 	http.ListenAndServe(":8000", r)
 }
