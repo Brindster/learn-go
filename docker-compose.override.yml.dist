@@ -1,0 +1,13 @@
+version: '3.6'
+
+services:
+  app:
+    environment:
+      MYSQL_USER: '***'
+      MYSQL_PASSWORD: '***'
+      MYSQL_DATABASE: '***'
+  db:
+    environment:
+      MYSQL_USER: '***'
+      MYSQL_PASSWORD: '***'
+      MYSQL_DATABASE: '***'
