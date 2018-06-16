@@ -39,6 +39,13 @@ func (v *View) Render(w http.ResponseWriter, params interface{}) error {
 	return v.Template.ExecuteTemplate(w, v.Layout+TemplateExt, params)
 }
 
+// ServeHTTP will render the template
+func (v *View) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	if err := v.Render(w, nil); err != nil {
+		panic(err)
+	}
+}
+
 func layoutFiles() []string {
 	files, err := filepath.Glob(LayoutDir + "*" + TemplateExt)
 	if err != nil {
