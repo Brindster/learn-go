@@ -18,9 +18,10 @@ var (
 // User is a user in the system
 type User struct {
 	gorm.Model
-	Name    string
-	Email   string `gorm:"not null;unique_index"`
-	IsAdmin bool
+	Name     string
+	Email    string `gorm:"not null;unique_index"`
+	IsAdmin  bool
+	Password string `gorm:"not null"`
 }
 
 // UserService is an ORM abstraction layer
