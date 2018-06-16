@@ -25,12 +25,14 @@ func notFoundHandler(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	staticController := controller.NewStaticController()
+	userController := controller.NewUser()
 
 	r := mux.NewRouter()
 
 	r.Handle("/", staticController.Views["index"])
 	r.Handle("/contact", staticController.Views["contact"])
 	r.Handle("/faq", staticController.Views["faq"])
+	r.HandleFunc("/new", userController.NewHandler)
 
 	var h http.Handler = http.HandlerFunc(notFoundHandler)
 	r.NotFoundHandler = h
