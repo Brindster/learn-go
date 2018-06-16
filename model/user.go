@@ -79,6 +79,11 @@ func (s *UserService) Truncate() {
 	s.db.AutoMigrate(&User{})
 }
 
+// Update updates an existing user in the database
+func (s *UserService) Update(user *User) error {
+	return s.db.Save(user).Error
+}
+
 func getOne(db *gorm.DB, d interface{}) error {
 	err := db.First(d).Error
 	if err == gorm.ErrRecordNotFound {
