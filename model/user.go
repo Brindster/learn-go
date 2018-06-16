@@ -62,6 +62,17 @@ func (s *UserService) GetByID(id uint) (*User, error) {
 	return &user, nil
 }
 
+// GetByEmail returns the User from the database with the given email.
+// If the user is not found, then ErrNotFound is returned
+func (s *UserService) GetByEmail(email string) (*User, error) {
+	var user User
+	q := s.db.Where("email = ?", email)
+	if err := getOne(q, &user); err != nil {
+		return nil, err
+	}
+	return &user, nil
+}
+
 // Truncate will truncate a table
 func (s *UserService) Truncate() {
 	s.db.DropTableIfExists(&User{})
