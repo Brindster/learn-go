@@ -11,6 +11,8 @@ import (
 var (
 	// ErrNotFound is an error when a record is not found in the database
 	ErrNotFound = errors.New("user: resource not found")
+	// ErrInvalidID is an error when an invalid ID is specified
+	ErrInvalidID = errors.New("user: specified ID was invalid")
 )
 
 // User is a user in the system
@@ -49,6 +51,15 @@ func (s *UserService) Close() error {
 // created at dates, etc
 func (s *UserService) Create(user *User) error {
 	return s.db.Create(user).Error
+}
+
+// Delete will remove the user from the database
+func (s *UserService) Delete(id uint) error {
+	if id == 0 {
+		return ErrInvalidID
+	}
+	user := User{Model: gorm.Model{ID: id}}
+	return s.db.Delete(&user).Error
 }
 
 // GetByID returns the User from the database with the given ID.
