@@ -1,13 +1,12 @@
 package main
 
 import (
-	"database/sql"
-	"fmt"
 	"net/http"
 	"os"
 
 	_ "github.com/go-sql-driver/mysql"
 
+	"chrisbrindley.co.uk/model"
 	"chrisbrindley.co.uk/view"
 	"github.com/gorilla/mux"
 )
@@ -15,11 +14,7 @@ import (
 var templates map[string]*view.View
 
 var (
-	host   = "db"
-	port   = "3306"
-	user   = os.Getenv("MYSQL_USER")
-	pass   = os.Getenv("MYSQL_PASSWORD")
-	dbname = os.Getenv("MYSQL_DATABASE")
+	conn = os.Getenv("DB_CONN")
 )
 
 func initTemplate(alias, path string) {
@@ -40,11 +35,28 @@ func render(w http.ResponseWriter, alias string, params interface{}) {
 func homeHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 
-	data := struct {
-		Name string
-	}{"Chris Brindley"}
+	us, err := model.NewUserService(conn)
+	if err != nil {
+		panic(err)
+	}
 
-	render(w, "home", data)
+	us.Truncate()
+
+	user := model.User{
+		Name:  "Chris Brindley",
+		Email: "chris@chrisbrindley.co.uk",
+	}
+
+	if err = us.Create(&user); err != nil {
+		panic(err)
+	}
+
+	fUser, err := us.GetByID(1)
+	if err != nil {
+		panic(err)
+	}
+
+	render(w, "home", fUser)
 }
 
 func contactHandler(w http.ResponseWriter, r *http.Request) {
@@ -92,19 +104,6 @@ func main() {
 
 	var h http.Handler = http.HandlerFunc(notFoundHandler)
 	r.NotFoundHandler = h
-
-	conn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", user, pass, host, port, dbname)
-	db, err := sql.Open("mysql", conn)
-	defer db.Close()
-	if err != nil {
-		panic(err)
-	}
-
-	if err = db.Ping(); err != nil {
-		panic(err)
-	}
-
-	fmt.Println("Successfully connected!")
 
 	http.ListenAndServe(":8000", r)
 }

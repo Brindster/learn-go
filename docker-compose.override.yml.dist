@@ -6,9 +6,7 @@ services:
       context: .
       target: dev
     environment:
-      MYSQL_USER: '***'
-      MYSQL_PASSWORD: '***'
-      MYSQL_DATABASE: '***'
+      DB_CONN: user:password@tcp(db:3306)/test
     volumes:
       - ".:/go/src/chrisbrindley.co.uk"
   db:
