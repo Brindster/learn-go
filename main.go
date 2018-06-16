@@ -25,7 +25,7 @@ func notFoundHandler(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	staticController := controller.NewStaticController()
-	userController := controller.NewUser()
+	userController := controller.NewUser(conn)
 
 	r := mux.NewRouter()
 
