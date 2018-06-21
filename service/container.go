@@ -2,7 +2,6 @@ package service
 
 import (
 	"errors"
-	"sync"
 )
 
 var (
@@ -26,7 +25,6 @@ type Container interface {
 
 // Services is a service that contains factories to create services
 type Services struct {
-	sync.RWMutex
 	factories map[string]Factory
 	services  map[string]interface{}
 }
@@ -54,19 +52,7 @@ func (s *Services) build(a string) (interface{}, error) {
 	return service, nil
 }
 
-// Build will create a new instance of the service
-func (s *Services) Build(a string) (interface{}, error) {
-	s.RLock()
-	defer s.RUnlock()
-
-	return s.build(a)
-}
-
-// Get will retrieve an existing service if if exists, otherwise build a new one
-func (s *Services) Get(a string) (interface{}, error) {
-	s.Lock()
-	defer s.Unlock()
-
+func (s *Services) get(a string) (interface{}, error) {
 	service, ok := s.services[a]
 	if ok {
 		return service, nil
@@ -79,6 +65,16 @@ func (s *Services) Get(a string) (interface{}, error) {
 
 	s.services[a] = built
 	return built, nil
+}
+
+// Build will create a new instance of the service
+func (s *Services) Build(a string) (interface{}, error) {
+	return s.build(a)
+}
+
+// Get will retrieve an existing service if if exists, otherwise build a new one
+func (s *Services) Get(a string) (interface{}, error) {
+	return s.get(a)
 }
 
 // MustBuild will return the service, or panic if it doesnt exist

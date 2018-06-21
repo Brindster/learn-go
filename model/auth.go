@@ -3,6 +3,8 @@ package model
 import (
 	"errors"
 	"golang.org/x/crypto/bcrypt"
+
+	"chrisbrindley.co.uk/service"
 )
 
 // UserAuth is an authentication system using the user model
@@ -16,10 +18,10 @@ var (
 )
 
 // NewUserAuth returns a new UserAuth model
-func NewUserAuth(connInfo string) (*UserAuth, error) {
-	us, err := NewUserService(connInfo)
-	if err != nil {
-		return nil, err
+func NewUserAuth(c service.Container) (interface{}, error) {
+	us, ok := c.MustGet("Model/UserService").(*UserService)
+	if !ok {
+		return nil, service.ErrInvalidType
 	}
 
 	return &UserAuth{

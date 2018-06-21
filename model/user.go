@@ -4,8 +4,7 @@ import (
 	"errors"
 	"github.com/jinzhu/gorm"
 
-	// Import mysql dialect
-	_ "github.com/jinzhu/gorm/dialects/mysql"
+	"chrisbrindley.co.uk/service"
 )
 
 var (
@@ -30,13 +29,11 @@ type UserService struct {
 }
 
 // NewUserService creates a new UserService struct
-func NewUserService(connInfo string) (*UserService, error) {
-	db, err := gorm.Open("mysql", connInfo)
-	if err != nil {
-		return nil, err
+func NewUserService(c service.Container) (interface{}, error) {
+	db, ok := c.MustGet("Model/Db").(*gorm.DB)
+	if !ok {
+		return nil, service.ErrInvalidType
 	}
-
-	db.LogMode(true)
 
 	return &UserService{
 		db: db,

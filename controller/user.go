@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"chrisbrindley.co.uk/model"
+	"chrisbrindley.co.uk/service"
 	"chrisbrindley.co.uk/view"
 )
 
@@ -14,22 +15,19 @@ type User struct {
 }
 
 // NewUser returns a User controller
-func NewUser(connInfo string) *User {
+func NewUser(c service.Container) (interface{}, error) {
 	views := make(map[string]*view.View)
 	views["new"] = view.NewView("main", "view/user/new.gohtml")
 
-	/**
-	 * @todo Inject UserAuth as a dependancy
-	 */
-	auth, err := model.NewUserAuth(connInfo)
-	if err != nil {
-		panic(err)
+	auth, ok := c.MustGet("Model/UserAuth").(*model.UserAuth)
+	if !ok {
+		return nil, service.ErrInvalidType
 	}
 
 	return &User{
 		auth:  auth,
 		views: views,
-	}
+	}, nil
 }
 
 // NewHandler is the HTTP handler for a new User
