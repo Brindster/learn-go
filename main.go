@@ -4,9 +4,9 @@ import (
 	"net/http"
 	"os"
 
-	_ "github.com/go-sql-driver/mysql"
-
 	"chrisbrindley.co.uk/controller"
+	"chrisbrindley.co.uk/model"
+	"chrisbrindley.co.uk/service"
 	"chrisbrindley.co.uk/view"
 	"github.com/gorilla/mux"
 )
@@ -24,8 +24,18 @@ func notFoundHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	var s map[string]service.Factory
+	s = make(map[string]service.Factory)
+
+	s["Model/Db"] = model.NewDbConnection
+	s["Model/UserAuth"] = model.NewUserAuth
+	s["Model/UserService"] = model.NewUserService
+	s["Controller/UserController"] = controller.NewUser
+
+	srv := service.NewServices(s)
+
 	staticController := controller.NewStaticController()
-	userController := controller.NewUser(conn)
+	userController, _ := srv.MustGet("Controller/UserController").(*controller.User)
 
 	r := mux.NewRouter()
 
