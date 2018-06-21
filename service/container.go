@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"sync"
 )
 
 var (
@@ -25,6 +26,7 @@ type Container interface {
 
 // Services is a service that contains factories to create services
 type Services struct {
+	sync.RWMutex
 	factories map[string]Factory
 	services  map[string]interface{}
 }
@@ -63,7 +65,9 @@ func (s *Services) get(a string) (interface{}, error) {
 		return nil, err
 	}
 
+	s.Lock()
 	s.services[a] = built
+	s.Unlock()
 	return built, nil
 }
 
