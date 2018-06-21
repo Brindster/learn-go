@@ -41,7 +41,8 @@ func NewServices(fcts map[string]Factory) *Services {
 	}
 }
 
-func (s *Services) build(a string) (interface{}, error) {
+// Build will create a new instance of the service
+func (s *Services) Build(a string) (interface{}, error) {
 	factory, ok := s.factories[a]
 	if !ok {
 		return nil, ErrNotFound
@@ -54,13 +55,14 @@ func (s *Services) build(a string) (interface{}, error) {
 	return service, nil
 }
 
-func (s *Services) get(a string) (interface{}, error) {
+// Get will retrieve an existing service if if exists, otherwise build a new one
+func (s *Services) Get(a string) (interface{}, error) {
 	service, ok := s.services[a]
 	if ok {
 		return service, nil
 	}
 
-	built, err := s.build(a)
+	built, err := s.Build(a)
 	if err != nil {
 		return nil, err
 	}
@@ -69,16 +71,6 @@ func (s *Services) get(a string) (interface{}, error) {
 	s.services[a] = built
 	s.Unlock()
 	return built, nil
-}
-
-// Build will create a new instance of the service
-func (s *Services) Build(a string) (interface{}, error) {
-	return s.build(a)
-}
-
-// Get will retrieve an existing service if if exists, otherwise build a new one
-func (s *Services) Get(a string) (interface{}, error) {
-	return s.get(a)
 }
 
 // MustBuild will return the service, or panic if it doesnt exist
